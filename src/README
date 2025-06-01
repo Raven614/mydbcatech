@@ -1,0 +1,33 @@
+# Proyecto Veterinaria - Gestion de inventarios y ventas
+
+Este proyecto corresponde al desarrollo de un módulo de ventas para una veterinaria, como parte de la evidencia de desempeño del programa de formación en desarrollo de software del SENA.
+
+## 🛠 Tecnologías usadas
+- Java (OpenJDK 24)
+- JDBC
+- MySQL
+- IntelliJ IDEA
+- MySQL Workbench
+- Git / GitHub
+
+## Estructura del proyecto
+- `modelo/`: Clases Java que representan entidades como Cliente, Producto, Venta y DetalleVenta.
+- `dao/`: Clases DAO para interacción con la base de datos.
+- `main/`: Interfaces gráficas ClienteUI, ProductoUI y VentaUI.
+- `util/`: Clase para la conexión JDBC.
+
+## Capturas de funcionamiento
+Incluye:
+- Inserción de ventas.
+- Registro de clientes/productos.
+- Protección contra eliminación de productos en uso.
+
+## Requisitos
+- Tener configurado MySQL y la base de datos `mydbcatech`.
+- Archivo `mysql-connector-j-9.3.0.jar` agregado como librería externa.
+
+## Link del repositorio
+https://github.com/Raven614/mydbcatech
+
+## Autor
+Sara Dueñas - 2879678
