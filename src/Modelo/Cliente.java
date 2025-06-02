@@ -6,6 +6,14 @@ public class Cliente {
     private String correo;
     private String telefono;
 
+    // Constructor vacío
+    public Cliente() {}
+
+    public Cliente(String nombre, String correo, String telefono) {
+        this.nombre = nombre;
+        this.correo = correo;
+        this.telefono = telefono;
+    }
     // Getters y Setters
     public int getIdCliente() { return idCliente; }
     public void setIdCliente(int idCliente) { this.idCliente = idCliente; }
@@ -18,5 +26,11 @@ public class Cliente {
 
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
+
+    @Override
+    public String toString() {
+        return nombre;
+    }
+
 }
 

@@ -18,14 +18,15 @@ public class VentaDAO {
             stmt.setDouble(3, venta.getTotal());
             stmt.executeUpdate();
 
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                return rs.getInt(1); // devuelve idVenta generado
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // devuelve idVenta generado
+                }
             }
-
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error al insertar venta: " + e.getMessage());
         }
         return -1;
     }
 }
+

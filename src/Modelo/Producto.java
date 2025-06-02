@@ -3,9 +3,18 @@ package Modelo;
 public class Producto {
     private int idProducto;
     private String nombre;
-    private String descripcion; // <--- Agregado
     private double precio;
     private int stock;
+    private String descripcion;
+
+    // Constructor vacío
+    public Producto() {}
+
+      public Producto(String nombre, double precio, int stock) {
+        this.nombre = nombre;
+        this.precio = precio;
+        this.stock = stock;
+    }
 
     public int getIdProducto() {
         return idProducto;
@@ -46,4 +55,10 @@ public class Producto {
     public void setStock(int stock) {
         this.stock = stock;
     }
+
+    @Override
+    public String toString() {
+        return nombre + " ($" + precio + ") - Stock: " + stock;
+    }
+
 }

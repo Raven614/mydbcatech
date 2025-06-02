@@ -6,11 +6,9 @@ import dao.ClienteDAO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 public class ClienteUI extends JFrame {
-
     private JTextField txtNombre, txtCorreo, txtTelefono;
     private JTextArea areaClientes;
     private JButton btnGuardar, btnListar;
@@ -22,10 +20,8 @@ public class ClienteUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new FlowLayout());
 
-        // Inicializar DAO
         clienteDAO = new ClienteDAO();
 
-        // Crear componentes
         txtNombre = new JTextField(20);
         txtCorreo = new JTextField(20);
         txtTelefono = new JTextField(20);
@@ -35,7 +31,6 @@ public class ClienteUI extends JFrame {
         btnGuardar = new JButton("Guardar Cliente");
         btnListar = new JButton("Listar Clientes");
 
-        // Añadir al Frame
         add(new JLabel("Nombre:"));
         add(txtNombre);
         add(new JLabel("Correo:"));
@@ -46,38 +41,34 @@ public class ClienteUI extends JFrame {
         add(btnListar);
         add(new JScrollPane(areaClientes));
 
-        // Evento: Guardar cliente
-        btnGuardar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String nombre = txtNombre.getText();
-                String correo = txtCorreo.getText();
-                String telefono = txtTelefono.getText();
+        btnGuardar.addActionListener((ActionEvent e) -> {
+            String nombre = txtNombre.getText().trim();
+            String correo = txtCorreo.getText().trim();
+            String telefono = txtTelefono.getText().trim();
 
-                Cliente cliente = new Cliente();
-                cliente.setNombre(nombre);
-                cliente.setCorreo(correo);
-                cliente.setTelefono(telefono);
+            if (nombre.isEmpty() || correo.isEmpty() || telefono.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.");
+                return;
+            }
 
-                if (clienteDAO.insertar(cliente)) {
-                    JOptionPane.showMessageDialog(null, "Cliente guardado exitosamente.");
-                    limpiarCampos();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Error al guardar el cliente.");
-                }
+            Cliente cliente =   new Cliente(nombre, correo, telefono);
+
+            if (clienteDAO.insertar(cliente)) {
+                JOptionPane.showMessageDialog(this, "Cliente guardado exitosamente.");
+                limpiarCampos();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al guardar el cliente.");
             }
         });
 
-        // Evento: Listar clientes
-        btnListar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                areaClientes.setText("");
-                List<Cliente> lista = clienteDAO.obtenerTodos();
-                for (Cliente c : lista) {
-                    areaClientes.append("ID: " + c.getIdCliente() +
-                            " | Nombre: " + c.getNombre() +
-                            " | Correo: " + c.getCorreo() +
-                            " | Teléfono: " + c.getTelefono() + "\n");
-                }
+        btnListar.addActionListener((ActionEvent e) -> {
+            areaClientes.setText("");
+            List<Cliente> lista = clienteDAO.obtenerTodos();
+            for (Cliente c : lista) {
+                areaClientes.append("ID: " + c.getIdCliente() +
+                        " | Nombre: " + c.getNombre() +
+                        " | Correo: " + c.getCorreo() +
+                        " | Teléfono: " + c.getTelefono() + "\n");
             }
         });
     }

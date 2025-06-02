@@ -16,8 +16,7 @@ public class ClienteDAO {
 
     public boolean insertar(Cliente cliente) {
         String sql = "INSERT INTO clientes(nombre, correo, telefono) VALUES (?, ?, ?)";
-        try {
-            PreparedStatement ps = con.prepareStatement(sql);
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, cliente.getNombre());
             ps.setString(2, cliente.getCorreo());
             ps.setString(3, cliente.getTelefono());
@@ -32,9 +31,8 @@ public class ClienteDAO {
     public List<Cliente> obtenerTodos() {
         List<Cliente> lista = new ArrayList<>();
         String sql = "SELECT * FROM clientes";
-        try {
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(sql);
+        try (Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
                 Cliente c = new Cliente();
                 c.setIdCliente(rs.getInt("idCliente"));
@@ -49,3 +47,4 @@ public class ClienteDAO {
         return lista;
     }
 }
+

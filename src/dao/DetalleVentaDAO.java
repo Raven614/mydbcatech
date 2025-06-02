@@ -18,10 +18,9 @@ public class DetalleVentaDAO {
             stmt.setDouble(4, detalle.getSubtotal());
 
             return stmt.executeUpdate() > 0;
-
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error al insertar detalle: " + e.getMessage());
+            return false;
         }
-        return false;
     }
 }

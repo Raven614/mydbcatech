@@ -5,7 +5,6 @@ import dao.ProductoDAO;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 public class ProductoUI extends JFrame {
@@ -59,36 +58,37 @@ public class ProductoUI extends JFrame {
         scroll.setBounds(20, 190, 340, 150);
         add(scroll);
 
-        // Evento: Guardar producto
-        btnGuardar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    Producto producto = new Producto();
-                    producto.setNombre(txtNombre.getText());
-                    producto.setPrecio(Double.parseDouble(txtPrecio.getText()));
-                    producto.setStock(Integer.parseInt(txtStock.getText()));
+        btnGuardar.addActionListener((ActionEvent e) -> {
+            try {
+                String nombre = txtNombre.getText().trim();
+                double precio = Double.parseDouble(txtPrecio.getText().trim());
+                int stock = Integer.parseInt(txtStock.getText().trim());
 
-                    if (productoDAO.insertar(producto)) {
-                        JOptionPane.showMessageDialog(null, "Producto guardado correctamente.");
-                        limpiarCampos();
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Error al guardar el producto.");
-                    }
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
+                if (nombre.isEmpty() || precio < 0 || stock < 0) {
+                    JOptionPane.showMessageDialog(this, "Datos inválidos.");
+                    return;
                 }
+
+                Producto producto = new Producto(nombre, precio, stock);
+                if (productoDAO.insertar(producto)) {
+                    JOptionPane.showMessageDialog(this, "Producto guardado correctamente.");
+                    limpiarCampos();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al guardar el producto.");
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
             }
         });
 
-        // Evento: Listar productos
-        btnListar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                areaProductos.setText(""); // limpiar
-                List<Producto> lista = productoDAO.obtenerTodos();
-                for (Producto p : lista) {
-                    areaProductos.append("ID: " + p.getIdProducto() + " | Nombre: " + p.getNombre() +
-                            " | Precio: " + p.getPrecio() + " | Stock: " + p.getStock() + "\n");
-                }
+        btnListar.addActionListener((ActionEvent e) -> {
+            areaProductos.setText("");
+            List<Producto> lista = productoDAO.obtenerTodos();
+            for (Producto p : lista) {
+                areaProductos.append("ID: " + p.getIdProducto() +
+                        " | Nombre: " + p.getNombre() +
+                        " | Precio: $" + p.getPrecio() +
+                        " | Stock: " + p.getStock() + "\n");
             }
         });
     }

@@ -1,13 +1,13 @@
 package main;
 
-import dao.ClienteDAO;
-import dao.DetalleVentaDAO;
-import dao.ProductoDAO;
-import dao.VentaDAO;
 import Modelo.Cliente;
 import Modelo.DetalleVenta;
 import Modelo.Producto;
 import Modelo.Venta;
+import dao.ClienteDAO;
+import dao.DetalleVentaDAO;
+import dao.ProductoDAO;
+import dao.VentaDAO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,13 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VentaUI extends JFrame {
-    private final JComboBox comboClientes;
-    private final JComboBox comboProductos;
+    private final JComboBox<Cliente> comboClientes;
+    private final JComboBox<Producto> comboProductos;
     private final JTextField txtCantidad;
     private final JTextArea areaDetalle;
     private final JButton btnAgregar;
     private final JButton btnGuardar;
     private final List<DetalleVenta> detalles = new ArrayList<>();
+
     public VentaUI() {
         setTitle("Registro de Venta");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -33,6 +34,8 @@ public class VentaUI extends JFrame {
         comboProductos = new JComboBox<>();
         txtCantidad = new JTextField(5);
         areaDetalle = new JTextArea(10, 40);
+        areaDetalle.setEditable(false);
+
         btnAgregar = new JButton("Agregar producto");
         btnGuardar = new JButton("Guardar venta");
 
@@ -70,10 +73,11 @@ public class VentaUI extends JFrame {
     }
 
     private void cargarProductos() {
-        comboProductos.removeAllItems();
         ProductoDAO productoDAO = new ProductoDAO();
-        for (Producto p : productoDAO.obtenerTodos()) {
-            comboProductos.addItem(p);
+        List<Producto> productos = productoDAO.obtenerTodos();
+        comboProductos.removeAllItems();
+        for (Producto producto : productos) {
+            comboProductos.addItem(producto);
         }
     }
 
@@ -88,16 +92,30 @@ public class VentaUI extends JFrame {
             return;
         }
 
+        if (cantidad <= 0) {
+            JOptionPane.showMessageDialog(this, "La cantidad debe ser mayor a cero.");
+            return;
+        }
+
+        if (producto == null || cantidad > producto.getStock()) {
+            JOptionPane.showMessageDialog(this, "Stock insuficiente para el producto seleccionado.");
+            return;
+        }
+
         DetalleVenta detalle = new DetalleVenta();
         detalle.setProducto(producto);
         detalle.setCantidad(cantidad);
         detalle.setSubtotal(producto.getPrecio() * cantidad);
-
         detalles.add(detalle);
 
         areaDetalle.append("Producto: " + producto.getNombre() +
                 ", Cantidad: " + cantidad +
                 ", Subtotal: $" + detalle.getSubtotal() + "\n");
+
+        // Descontar el stock en memoria
+        producto.setStock(producto.getStock() - cantidad);
+        comboProductos.repaint(); // Refrescar el combo
+        txtCantidad.setText("");
     }
 
     private void guardarVenta() {
@@ -117,15 +135,22 @@ public class VentaUI extends JFrame {
         int idVenta = ventaDAO.insertar(venta);
 
         DetalleVentaDAO detalleDAO = new DetalleVentaDAO();
+        ProductoDAO productoDAO = new ProductoDAO();
+
         for (DetalleVenta d : detalles) {
             d.setVenta(venta);
             detalleDAO.insertar(d);
+
+            // Actualizar el stock en la base de datos
+            Producto p = d.getProducto();
+            productoDAO.actualizar(p);
         }
 
         JOptionPane.showMessageDialog(this, "Venta guardada con éxito.");
         detalles.clear();
         areaDetalle.setText("");
         txtCantidad.setText("");
+        cargarProductos(); // Recargar productos con stock actualizado
     }
 
     private double calcularTotal() {
@@ -136,3 +161,4 @@ public class VentaUI extends JFrame {
         return total;
     }
 }
+
